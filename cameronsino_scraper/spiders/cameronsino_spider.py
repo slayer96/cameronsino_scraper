@@ -1,7 +1,7 @@
 import logging
 import scrapy
 import time
-from scrapy.contrib.spiders import CSVFeedSpider
+from scrapy.spiders import CSVFeedSpider
 from ..items import CameronsinoScraperItem
 from selenium import webdriver
 from scrapy.utils.project import get_project_settings

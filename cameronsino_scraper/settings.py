@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import datetime
 # Scrapy settings for cameronsino_scraper project
 #
 # For simplicity, this file contains only settings considered important or
@@ -60,6 +60,8 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
     'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
 }
+
+FEED_URI = '/home/ubf19/cameronsino_data/results_data_{}.csv'.format(datetime.datetime.now().strftime("%Y-%m-%d"))
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
