@@ -5,7 +5,7 @@ from scrapy.contrib.spiders import CSVFeedSpider
 from ..items import CameronsinoScraperItem
 from selenium import webdriver
 from scrapy.utils.project import get_project_settings
-from login import LOGIN, PASSWORD
+from config import LOGIN, PASSWORD, PHANTOMJS_PATH
 
 logger = logging.getLogger('logger')
 settings = get_project_settings()
@@ -23,7 +23,7 @@ class GameronsinoSpider(CSVFeedSpider):
 
     def __init__(self, *args, **kwargs):
         super(GameronsinoSpider, self).__init__(*args, **kwargs)
-        self.driver = webdriver.PhantomJS()
+        self.driver = webdriver.PhantomJS(executable_path=PHANTOMJS_PATH)
 
     def start_requests(self):
         # let's start by sending a first request to login page
@@ -34,8 +34,8 @@ class GameronsinoSpider(CSVFeedSpider):
         self.driver.get(url='https://www.cameronsino.com/dropship/dslogind.html')
         captcha_val = self.driver.find_element_by_xpath('//input[@id="Code"]').get_attribute('value')
 
-        login_user = 'Danawu'
-        login_password = '1919'
+        login_user = LOGIN
+        login_password = PASSWORD
 
         username = self.driver.find_element_by_id("Username")
         password = self.driver.find_element_by_name("Password")
