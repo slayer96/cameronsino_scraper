@@ -62,6 +62,7 @@ DOWNLOADER_MIDDLEWARES = {
 }
 
 FEED_URI = '/home/ubf19/cameronsino_data/results_data_{}.csv'.format(datetime.datetime.now().strftime("%Y-%m-%d"))
+FEED_FORMAT = 'csv'
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
