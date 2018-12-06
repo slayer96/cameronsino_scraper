@@ -1,7 +1,7 @@
 import logging
 import scrapy
 import time
-from scrapy.spiders import CSVFeedSpider
+from scrapy.contrib.spiders import CSVFeedSpider
 from ..items import CameronsinoScraperItem
 from selenium import webdriver
 from scrapy.utils.project import get_project_settings
@@ -23,7 +23,7 @@ class GameronsinoSpider(CSVFeedSpider):
 
     def __init__(self, *args, **kwargs):
         super(GameronsinoSpider, self).__init__(*args, **kwargs)
-        self.driver = webdriver.PhantomJS(executable_path=PHANTOMJS_PATH)
+        self.driver = webdriver.PhantomJS()
 
     def start_requests(self):
         # let's start by sending a first request to login page
@@ -58,7 +58,7 @@ class GameronsinoSpider(CSVFeedSpider):
 
     def parse(self, response):
         logging.info('Parse')
-        categories = response.xpath('//ul[@id="caul"]/li')
+        categories = response.xpath('//ul[@id="caul"]/li')[:3]
         # pdb.set_trace()
         for category in categories:
             category_name = category.xpath('./a/text()').extract_first()
@@ -73,8 +73,8 @@ class GameronsinoSpider(CSVFeedSpider):
         self.driver.get(response.url)
         time.sleep(3)
         # pdb.set_trace()
-        sub_categories = response.xpath('//div[@class="BatterySeriesBody"]/a')
-        images = self.driver.find_elements_by_xpath('//li[@class="BatterySeriesProductLi1"]/img')
+        sub_categories = response.xpath('//div[@class="BatterySeriesBody"]/a')[:2]
+        images = self.driver.find_elements_by_xpath('//li[@class="BatterySeriesProductLi1"]/img')[:2]
         for sub, image in zip(sub_categories, images):
             sub_link = sub.xpath('./@href').extract_first()
             sub_name = sub.xpath('./ul/li[@class="BatterySeriesProductLi2"]/text()').extract_first()
@@ -108,7 +108,10 @@ class GameronsinoSpider(CSVFeedSpider):
         item['Categories'] = response.meta['category'].strip()
         item['SubCategories'] = response.meta['subcategory'].strip()
         item['CategoryImage'] = response.meta['category_image']
-        item['SKU'] = response.xpath('//td[@class="detail-mtit"]/text()').extract_first().strip()
+        sku = response.xpath('//td[@class="detail-mtit"]/text()').extract_first()
+        if sku:
+            sku = sku.strip()
+        item['SKU'] = sku
         item['Bar_Code'] = self.get_data_by_name(response, "EAN Code:")
         item['Brand'] = ', '.join([i.strip() for i in response.xpath('//div[@id="fitmodel"]//div[@class="productshow_brand"]/text()').extract()]).strip()
         item['Volts'] = self.get_data_by_name(response, "Voltage:")
@@ -135,7 +138,7 @@ class GameronsinoSpider(CSVFeedSpider):
             remark = ''
         item['Remark'] = remark
         images = response.xpath('//div[@id="spec-list"]//img[contains(@id, "img")]/@src').extract()
-        if images:
+        if len(images) > 2:
             item['base_image'] = images[0]
             item['small_image'] = images[0]
             item['thumbnail_image'] = images[0]
