@@ -5,7 +5,7 @@ from scrapy.contrib.spiders import CSVFeedSpider
 from ..items import CameronsinoScraperItem
 from selenium import webdriver
 from scrapy.utils.project import get_project_settings
-from config import LOGIN, PASSWORD, PHANTOMJS_PATH
+from config import LOGIN, PASSWORD, PHANTOMJS_PATH, LOCATION
 
 logger = logging.getLogger('logger')
 settings = get_project_settings()
@@ -94,7 +94,7 @@ class GameronsinoSpider(CSVFeedSpider):
         logging.info('Parse Subcategory')
         products_urls = response.xpath('//div[@class="BatteryListProductAll"]/ul/a/@title').extract()
         for product in products_urls:
-            url = 'https://www.cameronsino.com/dropship/dropshipproductdetails.html?itemno={}&issearch=true&TabIndex=US'.format(product)
+            url = 'https://www.cameronsino.com/dropship/dropshipproductdetails.html?itemno={}&issearch=true&TabIndex={}'.format(product, LOCATION)
             yield scrapy.Request(url, callback=self.parse_product, meta=response.meta)
 
         next_page = response.xpath('//a[text()="Next"]/@href').extract_first()
